@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Про проєкт | Mini Banking App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .hero-section {
+            background: linear-gradient(135deg, #212529 0%, #343a40 100%);
+            color: white;
+            padding: 100px 0;
+            border-bottom: 5px solid #0d6efd;
+        }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .arch-card { border-left: 4px solid #0d6efd; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">🏦 MBA SYSTEM</a>
+        <div class="d-flex">
+            <a th:href="@{/login}" class="btn btn-primary btn-sm px-4">Вхід до банку</a>
+        </div>
+    </div>
+</nav>
+
+<header class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-3">Mini Banking App</h1>
+        <p class="lead mb-4">Хмарна банківська система на базі Spring Boot та Microsoft Azure</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a th:href="@{/login}" class="btn btn-lg btn-primary">Демо-вхід</a>
+        </div>
+    </div>
+</header>
+
+<main class="container py-5">
+
+    <div class="row mb-5 align-items-center">
+        <div class="col-lg-6">
+            <h2 class="fw-bold mb-4">Про проєкт</h2>
+            <p class="text-muted fs-5">
+                Даний програмний комплекс є результатом дипломного проєктування.
+                Він демонструє реалізацію сучасного банківського API з використанням
+                мікросервісних підходів у монолітній архітектурі, розгорнутій у хмарі.
+            </p>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm arch-card p-4">
+                <h5 class="fw-bold">Технологічний стек (Backend)</h5>
+                <ul class="mb-0">
+                    <li><strong>Java 17</strong> & Spring Boot 3</li>
+                    <li><strong>Spring Security</strong> (RBAC + BCrypt)</li>
+                    <li><strong>Spring Data JPA</strong> & Azure SQL</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <section id="features" class="py-5">
+        <h2 class="text-center fw-bold mb-5">Функціональні модулі</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center p-4">
+                    <div class="feature-icon">🔐</div>
+                    <h5 class="fw-bold">Безпека</h5>
+                    <p class="small text-muted">Багаторівнева автентифікація та рольова модель доступу (User/Admin).</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center p-4">
+                    <div class="feature-icon">💳</div>
+                    <h5 class="fw-bold">Транзакції</h5>
+                    <p class="small text-muted">Механізм Deposit/Withdraw з підтримкою ACID транзакцій у БД.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center p-4">
+                    <div class="feature-icon">☁️</div>
+                    <h5 class="fw-bold">Azure Cloud</h5>
+                    <p class="small text-muted">Розгортання на Azure Virtual Machine з використанням Manual Deployment.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-5 p-5 bg-white rounded shadow-sm">
+        <h2 class="fw-bold mb-4 text-center">Інфраструктура Azure</h2>
+        <div class="row text-center">
+            <div class="col-md-3">
+                <div class="p-3 border rounded mb-2 bg-light">User Client</div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded mb-2 bg-light">Nginx (Proxy)</div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded mb-2 bg-primary text-white">Spring Boot App</div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 border rounded mb-2 bg-info text-white">Azure SQL DB</div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container text-center">
+        <p class="mb-1 fw-bold">Mini Banking App | 2026</p>
+        <p class="small text-muted mb-0">Розроблено для дипломного проєкту. Всі права захищені.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

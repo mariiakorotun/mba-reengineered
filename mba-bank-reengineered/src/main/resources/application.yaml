@@ -1,0 +1,24 @@
+# MBA Bank 2.0 — базова конфігурація (без секретів).
+# Профіль за замовчуванням — local (H2 у пам'яті). Для Azure: SPRING_PROFILES_ACTIVE=prod.
+spring:
+  application:
+    name: mba-bank
+  profiles:
+    default: local
+  jpa:
+    open-in-view: false          # шаблони отримують лише DTO, ліниве завантаження у view не потрібне
+    show-sql: false
+  thymeleaf:
+    cache: true
+
+server:
+  error:
+    include-stacktrace: never
+    include-message: never
+
+mba:
+  notifications:
+    admin-email: ${MBA_ADMIN_EMAIL:}
+    from: ${MBA_MAIL_FROM:}
+  bootstrap:
+    admin-password: ${MBA_BOOTSTRAP_ADMIN_PASSWORD:}

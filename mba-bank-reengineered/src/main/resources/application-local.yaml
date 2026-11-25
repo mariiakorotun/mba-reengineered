@@ -1,0 +1,15 @@
+# Локальний запуск і демонстрація: ./mvnw spring-boot:run
+spring:
+  datasource:
+    url: jdbc:h2:mem:mba;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  thymeleaf:
+    cache: false
+
+mba:
+  seed:
+    demo-users: true   # user / uSe%r456, admin / @Dm1n789 — лише для локального профілю

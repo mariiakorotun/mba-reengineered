@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Панель керування')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('dashboard')}"></nav>
+
+<main class="container py-5">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div class="row g-4">
+
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h2 class="h4">Вітаємо, <span th:class="${isAdmin} ? 'text-warning' : 'text-primary'" th:text="${username}">Користувач</span> 👋</h2>
+                    <p class="text-muted mb-0">Раді бачити вас знову. Ось огляд ваших фінансів.</p>
+                </div>
+            </div>
+
+            <div th:if="${isAdmin}" class="mb-5">
+                <h5 class="mb-3 text-secondary">Картки користувачів системи (Моніторинг):</h5>
+                <div class="row g-3">
+                    <div class="col-md-6" th:each="acc : ${allAccounts}">
+                        <div class="card border-0 shadow-sm p-4 h-100 card-monitor">
+                            <div class="card-body">
+                                <h6 class="text-uppercase opacity-75" th:text="'#' + ${acc.id} + ' ' + ${acc.label}">РАХУНОК</h6>
+                                <h2 class="fw-bold mt-2" th:text="${#numbers.formatDecimal(acc.balance, 1, 2, 'POINT')} + ' ' + ${acc.currency}">0.00 UAH</h2>
+                                <a class="small text-white" th:href="@{/accounts/{id}(id=${acc.id})}">Виписка →</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12" th:if="${#lists.isEmpty(allAccounts)}">
+                        <div class="alert alert-light text-muted">Активні картки користувачів відсутні.</div>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="mb-3 text-secondary">Ваші активні рахунки:</h5>
+            <div class="row g-3">
+                <div class="col-md-6" th:each="account : ${accounts}">
+                    <div class="card border-0 shadow-lg p-4 h-100 position-relative"
+                         th:classappend="'card-' + ${#strings.toLowerCase(account.currency)}">
+
+                        <form th:if="${isAdmin}" th:action="@{/accounts/delete-direct}" method="post" class="position-absolute top-0 end-0 m-3">
+                            <input type="hidden" name="accountId" th:value="${account.id}">
+                            <button type="submit" class="btn-close btn-close-white" aria-label="Закрити рахунок"
+                                    onclick="return confirm('Закрити цей рахунок? Закриття можливе лише з нульовим балансом.');"></button>
+                        </form>
+
+                        <button th:unless="${isAdmin}" type="button"
+                                class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                                data-bs-toggle="modal" data-bs-target="#closeAccountModal"
+                                th:data-account-id="${account.id}" th:data-account-label="${account.label}"
+                                aria-label="Закрити рахунок">
+                        </button>
+
+                        <div class="card-body">
+                            <h6 class="text-uppercase opacity-75" th:text="${account.label}">Рахунок</h6>
+                            <h2 class="fw-bold mt-2" th:text="${#numbers.formatDecimal(account.balance, 1, 2, 'POINT')} + ' ' + ${account.currency}">0.00 UAH</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12" th:if="${#lists.isEmpty(accounts)}">
+                    <div class="alert alert-warning">У вас немає жодного відкритого особистого рахунку.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3"><h5 class="mb-0">Швидкі дії</h5></div>
+                <div class="card-body d-grid gap-3">
+                    <a th:href="@{/accounts}" class="btn btn-outline-primary py-3">📂 Мої рахунки</a>
+                    <a th:href="@{/transactions}" class="btn btn-outline-secondary py-3">📜 Історія операцій</a>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm" th:if="${isAdmin}">
+                <div class="card-header bg-white py-3"><h5 class="mb-0">➕ Створити новий рахунок</h5></div>
+                <div class="card-body">
+                    <form th:action="@{/admin/accounts/create}" method="post">
+                        <input type="hidden" name="userId" th:value="${userId}" />
+                        <input type="hidden" name="returnTo" value="dashboard" />
+                        <div class="mb-3">
+                            <label for="currencySelect" class="form-label fw-bold">Валюта рахунку:</label>
+                            <select class="form-select" id="currencySelect" name="currency" required>
+                                <option value="UAH">Гривня (UAH) 🟦</option>
+                                <option value="USD">Долар (USD) 🟩</option>
+                                <option value="EUR">Євро (EUR) 🟪</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Тип рахунку:</label>
+                            <select class="form-select" name="type" required>
+                                <option value="CURRENT">Поточний</option>
+                                <option value="SAVINGS">Ощадний</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Створити і активувати</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="modal fade" id="closeAccountModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true" th:unless="${isAdmin}">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title h6" id="modalLabel">Закриття рахунку</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/accounts/close}" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="modalAccountId" name="accountId">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Рахунок</label>
+                        <input type="text" class="form-control form-control-sm bg-light" id="modalAccountLabel" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="closureReason" class="form-label small fw-bold">Причина закриття</label>
+                        <select class="form-select form-select-sm" id="closureReason" name="closureReason" required>
+                            <option value="" disabled selected>Оберіть причину</option>
+                            <option>Не користуюся цим рахунком</option>
+                            <option>Високі тарифи комісії</option>
+                            <option>Перехід в інший банк</option>
+                            <option>Незручний мобільний інтерфейс</option>
+                            <option>Помилково створений рахунок</option>
+                            <option>Зміна особистих фінансових цілей</option>
+                            <option>Технічні неполадки в додатку</option>
+                            <option>Втрата картки / Питання безпеки</option>
+                            <option>Переїзд за кордон</option>
+                            <option>Інші особисті причини</option>
+                        </select>
+                    </div>
+                    <p class="small text-muted mb-0">Закрити можна лише рахунок з нульовим балансом. Історія операцій зберігається.</p>
+                </div>
+                <div class="modal-footer g-2 p-2 bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="submit" class="btn btn-danger btn-sm">Підтвердити</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: footer('Захищено Azure Cloud Security')}"></th:block>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('closeAccountModal');
+        if (!modal) return;
+        modal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            modal.querySelector('#modalAccountId').value = button.getAttribute('data-account-id');
+            modal.querySelector('#modalAccountLabel').value = button.getAttribute('data-account-label');
+        });
+    });
+</script>
+</body>
+</html>

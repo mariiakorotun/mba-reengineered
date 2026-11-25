@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Рахунки')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('accounts')}"></nav>
+
+<main class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Мої рахунки</h2>
+        <span class="badge bg-primary px-3 py-2" th:text="${accounts.size()} + ' рахунків задіяно'"></span>
+    </div>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4" th:each="acc : ${accounts}">
+            <div class="card account-card shadow-lg h-100" th:classappend="'card-' + ${#strings.toLowerCase(acc.currency)}">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="card-title mb-0 text-uppercase fw-bold" th:text="${acc.label}">Поточний #1 (UAH)</h5>
+                        <span class="text-light-opacity small">ID: [[${acc.id}]]</span>
+                    </div>
+
+                    <div class="balance-value mb-4">
+                        <span th:text="${#numbers.formatDecimal(acc.balance, 1, 2, 'POINT')}">0.00</span>
+                        <span class="fs-4 text-light-opacity" th:text="${acc.currency}">UAH</span>
+                    </div>
+
+                    <div class="card-hr"></div>
+
+                    <div class="operations mt-3">
+                        <p class="small fw-bold text-light-opacity mb-2">Швидкі операції:</p>
+                        <form th:action="@{/accounts/{id}/deposit(id=${acc.id})}" method="post" class="input-group mb-2">
+                            <input type="number" name="amount" step="0.01" min="0.01" max="1000000" class="form-control form-control-sm" placeholder="Сума" required>
+                            <button type="submit" class="btn btn-sm btn-light text-success fw-bold px-3">Поповнити</button>
+                        </form>
+                        <form th:action="@{/accounts/{id}/withdraw(id=${acc.id})}" method="post" class="input-group mb-3">
+                            <input type="number" name="amount" step="0.01" min="0.01" max="1000000" class="form-control form-control-sm" placeholder="Сума" required>
+                            <button type="submit" class="btn btn-sm btn-outline-light text-white fw-bold px-3">Зняти</button>
+                        </form>
+                        <a class="btn btn-sm btn-outline-light w-100" th:href="@{/accounts/{id}(id=${acc.id})}">Деталі та виписка →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(accounts)}">
+            <div class="card border-0 shadow-sm p-5">
+                <p class="text-muted mb-0">У вас поки немає відкритих рахунків. Зверніться до адміністратора.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Нова функція 2.0: переказ між власними рахунками однієї валюти -->
+    <div class="card border-0 shadow-sm mt-5" th:if="${accounts.size() > 1}">
+        <div class="card-header bg-white py-3"><h5 class="mb-0">🔁 Переказ між власними рахунками</h5></div>
+        <div class="card-body">
+            <form th:action="@{/accounts/transfer}" method="post" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">З рахунку</label>
+                    <select name="fromAccountId" class="form-select" required>
+                        <option th:each="acc : ${accounts}" th:value="${acc.id}"
+                                th:text="${acc.label} + ' — ' + ${#numbers.formatDecimal(acc.balance, 1, 2, 'POINT')} + ' ' + ${acc.currency}"></option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">На рахунок</label>
+                    <select name="toAccountId" class="form-select" required>
+                        <option th:each="acc, st : ${accounts}" th:value="${acc.id}" th:selected="${st.index == 1}"
+                                th:text="${acc.label} + ' — ' + ${acc.currency}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Сума</label>
+                    <input type="number" name="amount" step="0.01" min="0.01" max="1000000" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Переказати</button>
+                </div>
+            </form>
+            <p class="small text-muted mt-2 mb-0">Переказ можливий лише між рахунками в одній валюті.</p>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: footer('Рахунки')}"></th:block>
+</body>
+</html>

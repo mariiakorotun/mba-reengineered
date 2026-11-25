@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Рахунок')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('accounts')}"></nav>
+
+<main class="container py-5">
+    <a th:href="@{/accounts}" class="btn btn-sm btn-outline-secondary mb-4">← До рахунків</a>
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card account-card shadow-lg" th:classappend="'card-' + ${#strings.toLowerCase(account.currency)}">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="card-title mb-0 text-uppercase fw-bold" th:text="${account.label}">Рахунок</h5>
+                        <span class="text-light-opacity small">ID: [[${account.id}]]</span>
+                    </div>
+                    <div class="balance-value mb-2">
+                        <span th:text="${#numbers.formatDecimal(account.balance, 1, 2, 'POINT')}">0.00</span>
+                        <span class="fs-4 text-light-opacity" th:text="${account.currency}">UAH</span>
+                    </div>
+                    <p class="small text-light-opacity mb-0">
+                        Тип: <span th:text="${account.kind.title()}">Поточний</span> ·
+                        Статус: <span th:text="${account.active} ? 'активний' : 'закритий'">активний</span>
+                    </p>
+                    <th:block th:if="${owner and account.active}">
+                        <div class="card-hr"></div>
+                        <form th:action="@{/accounts/{id}/deposit(id=${account.id})}" method="post" class="input-group mb-2">
+                            <input type="hidden" name="from" value="details">
+                            <input type="number" name="amount" step="0.01" min="0.01" max="1000000" class="form-control form-control-sm" placeholder="Сума" required>
+                            <button type="submit" class="btn btn-sm btn-light text-success fw-bold px-3">Поповнити</button>
+                        </form>
+                        <form th:action="@{/accounts/{id}/withdraw(id=${account.id})}" method="post" class="input-group">
+                            <input type="hidden" name="from" value="details">
+                            <input type="number" name="amount" step="0.01" min="0.01" max="1000000" class="form-control form-control-sm" placeholder="Сума" required>
+                            <button type="submit" class="btn btn-sm btn-outline-light text-white fw-bold px-3">Зняти</button>
+                        </form>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="table-container p-2">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                        <th class="ps-4">Дата та час</th>
+                        <th>Операція</th>
+                        <th class="text-end">Сума</th>
+                        <th class="text-end pe-4">Залишок після</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row : ${rows}">
+                        <td class="ps-4 text-muted" th:text="${#temporals.format(row.tx.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2026 12:00</td>
+                        <td th:replace="~{fragments/layout :: typeCell(${row.tx})}"></td>
+                        <td th:replace="~{fragments/layout :: amountCell(${row})}"></td>
+                        <td class="text-end pe-4 text-muted"
+                            th:text="${row.tx.balanceAfter != null} ? ${#numbers.formatDecimal(row.tx.balanceAfter, 1, 2, 'POINT')} : '—'">—</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(rows)}">
+                        <td colspan="4" class="text-center py-5 text-muted">Операцій за рахунком ще не було.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: footer('Виписка за рахунком')}"></th:block>
+</body>
+</html>

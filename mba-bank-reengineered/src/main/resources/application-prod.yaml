@@ -1,0 +1,26 @@
+# Azure: Ubuntu VM + Azure SQL через Private Endpoint, автентифікація Managed Identity.
+# Усі значення, що залежать від середовища, передаються змінними середовища (див. docs/DEPLOYMENT.md).
+spring:
+  datasource:
+    # Приклад: jdbc:sqlserver://<server>.database.windows.net:1433;databaseName=<db>;
+    #          authentication=ActiveDirectoryManagedIdentity;msiClientId=<client-id>;encrypt=true;trustServerCertificate=false;
+    url: ${AZURE_SQL_URL}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      # Нові стовпці (kind, status, closed_at, version, currency, balance_after, reference)
+      # додаються адитивно зі значеннями за замовчуванням; скрипт для ручної міграції — docs/migration-v2.sql
+      ddl-auto: ${MBA_DDL_AUTO:update}
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true

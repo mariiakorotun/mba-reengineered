@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Адмін-панель')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('admin')}"></nav>
+
+<main class="container py-5">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark">Керування доступом та рахунками</h2>
+        <div class="text-muted">Всього користувачів: <span class="badge bg-secondary" th:text="${users.size()}">0</span></div>
+    </div>
+
+    <div class="table-container shadow-sm">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th class="ps-4">Імʼя користувача</th>
+                <th>Роль</th>
+                <th>Статус акаунта</th>
+                <th class="text-end pe-4">Дії</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${users}">
+                <td class="ps-4"><span class="fw-bold" th:text="'👤 ' + ${u.username}">user</span></td>
+                <td><span th:class="${u.admin} ? 'badge admin-badge' : 'badge bg-light text-dark border'" th:text="${u.role}">USER</span></td>
+                <td>
+                    <span th:class="${u.enabled} ? 'status-active' : 'status-blocked'"
+                          th:text="${u.enabled} ? '● Активний' : '○ Заблокований'"></span>
+                </td>
+                <td class="text-end pe-4">
+                    <button type="button" class="btn btn-sm btn-primary me-1" data-bs-toggle="modal"
+                            th:data-bs-target="'#createCardModal-' + ${u.id}">➕ Додати рахунок</button>
+
+                    <form th:action="@{/admin/toggle-status/{id}(id=${u.id})}" method="post" style="display:inline;">
+                        <button type="submit"
+                                th:class="${u.enabled} ? 'btn btn-sm btn-outline-danger' : 'btn btn-sm btn-success'"
+                                th:disabled="${u.username == username}"
+                                th:text="${u.enabled} ? 'Блокувати' : 'Розблокувати'">Дія</button>
+                    </form>
+
+                    <div class="modal fade" th:id="'createCardModal-' + ${u.id}" tabindex="-1" aria-hidden="true" style="text-align: left;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-dark text-white">
+                                    <h5 class="modal-title">Новий рахунок для <span class="text-warning" th:text="${u.username}">user</span></h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form th:action="@{/admin/accounts/create}" method="post">
+                                    <input type="hidden" name="userId" th:value="${u.id}" />
+                                    <div class="modal-body text-dark">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Валюта рахунку:</label>
+                                            <select class="form-select" name="currency" required>
+                                                <option th:each="c : ${currencies}" th:value="${c}" th:text="${c.title()} + ' (' + ${c} + ')'">UAH</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Тип рахунку:</label>
+                                            <select class="form-select" name="type">
+                                                <option th:each="k : ${kinds}" th:value="${k}" th:text="${k.title()}">Поточний</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                                        <button type="submit" class="btn btn-success">Створити і активувати</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 alert alert-warning d-flex align-items-center shadow-sm" role="alert">
+        <span class="me-2">⚠️</span>
+        <div>Не можна змінити статус власного облікового запису або заблокувати останнього активного адміністратора.</div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: footer('Admin Interface')}"></th:block>
+</body>
+</html>

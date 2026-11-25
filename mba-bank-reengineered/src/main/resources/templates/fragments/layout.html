@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<!--
+  Спільні фрагменти сторінок. У першій версії навігація, підвал і стилі карток
+  були скопійовані в кожен шаблон (5 копій навігаційної панелі).
+-->
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' | Mini Banking App'">MBA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f7f6; }
+        .navbar-brand { font-weight: bold; letter-spacing: 1px; }
+        .card-uah { background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); color: white; }
+        .card-usd { background: linear-gradient(135deg, #198754 0%, #146c43 100%); color: white; }
+        .card-eur { background: linear-gradient(135deg, #6f42c1 0%, #523193 100%); color: white; }
+        .card-monitor { background: #6c757d; color: white; }
+        .account-card { transition: transform 0.2s; border: none; color: white; }
+        .account-card:hover { transform: translateY(-5px); }
+        .balance-value { font-size: 2rem; font-weight: 700; }
+        .text-light-opacity { color: rgba(255, 255, 255, 0.75); }
+        .card-hr { border-top: 1px solid rgba(255, 255, 255, 0.25); margin: 15px 0; }
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .type-credit { color: #198754; font-weight: 600; }
+        .type-debit { color: #dc3545; font-weight: 600; }
+        .amount-cell { font-family: 'Courier New', monospace; font-size: 1.1rem; }
+        .admin-badge { background-color: #ffc107; color: #000; font-weight: bold; }
+        .status-active { color: #198754; font-weight: 600; }
+        .status-blocked { color: #dc3545; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<nav th:fragment="navbar(active)" class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/dashboard}" th:text="${isAdmin} ? '🏦 MBA ADMIN' : '🏦 MBA BANK'">🏦 MBA BANK</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" th:classappend="${active == 'dashboard'} ? 'active'" th:href="@{/dashboard}">Головна</a></li>
+                <li class="nav-item"><a class="nav-link" th:classappend="${active == 'accounts'} ? 'active'" th:href="@{/accounts}">Рахунки</a></li>
+                <li class="nav-item"><a class="nav-link" th:classappend="${active == 'transactions'} ? 'active'" th:href="@{/transactions}">Транзакції</a></li>
+                <li class="nav-item" th:if="${isAdmin}"><a class="nav-link text-warning" th:classappend="${active == 'admin'} ? 'active'" th:href="@{/admin}">Адмін-панель</a></li>
+            </ul>
+            <form th:action="@{/logout}" method="post" class="d-flex">
+                <button class="btn btn-outline-light btn-sm" type="submit">Вийти</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div th:fragment="flash">
+    <div th:if="${errorMessage} or ${param.error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <span th:if="${errorMessage}" th:text="${errorMessage}">Помилка</span>
+        <span th:if="${param.error != null and param.error[0] == 'access_denied'}">🚨 Доступ заборонено! Рахунок належить іншому користувачу.</span>
+        <span th:if="${param.error != null and param.error[0] == 'not_found'}">🔍 Рахунок не знайдено в системі.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <span th:text="${successMessage}">Успішно виконано!</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+
+<!-- Комірки таблиць історії (спільні для /transactions і /accounts/{id}) -->
+<table><tr>
+                <td th:fragment="typeCell(tx)">
+                    <span th:class="${tx.credit} ? 'type-credit' : 'type-debit'"
+                          th:switch="${tx.type.name()}">
+                        <th:block th:case="'DEPOSIT'">📥 Поповнення</th:block>
+                        <th:block th:case="'WITHDRAW'">📤 Зняття</th:block>
+                        <th:block th:case="'TRANSFER_IN'">🔁 Переказ (надходження)</th:block>
+                        <th:block th:case="'TRANSFER_OUT'">🔁 Переказ (списання)</th:block>
+                    </span>
+                </td>
+                <td class="text-end pe-4 amount-cell fw-bold" th:fragment="amountCell(row)">
+                    <span th:class="${row.tx.credit} ? 'text-success' : 'text-danger'"
+                          th:text="(${row.tx.credit} ? '+' : '-') + ${#numbers.formatDecimal(row.tx.amount, 1, 2, 'POINT')} + ' ' + ${row.currency}">
+                        +1000.00 UAH
+                    </span>
+                </td>
+</tr></table>
+
+<th:block th:fragment="footer(text)">
+    <footer class="py-4 text-center text-muted">
+        <div class="container"><hr><p class="small" th:text="'© 2026 Mini Banking App | ' + ${text}">© 2026</p></div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</th:block>
+
+</body>
+</html>

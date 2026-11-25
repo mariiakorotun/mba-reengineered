@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Транзакції')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar('transactions')}"></nav>
+
+<main class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Історія транзакцій</h2>
+        <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">🖨️ Друк виписки</button>
+    </div>
+
+    <div class="table-container p-2">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+            <tr>
+                <th class="ps-4">Дата та час</th>
+                <th>Тип операції</th>
+                <th>Рахунок</th>
+                <th th:if="${isAdmin}">Користувач</th>
+                <th class="text-end pe-4">Сума</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${rows}">
+                <td class="ps-4 text-muted">
+                    <span th:text="${#temporals.format(row.tx.createdAt, 'dd.MM.yyyy')}">01.01.2026</span>
+                    <small class="d-block text-secondary" th:text="${#temporals.format(row.tx.createdAt, 'HH:mm')}">12:00</small>
+                </td>
+                <td th:replace="~{fragments/layout :: typeCell(${row.tx})}"></td>
+                <td>
+                    <span class="badge bg-light text-dark border"
+                          th:text="'#' + ${row.tx.accountId} + ' ' + ${row.accountLabel}">#1 Поточний</span>
+                </td>
+                <td th:if="${isAdmin}">
+                    <span th:text="${row.actor}" class="badge bg-secondary">Користувач</span>
+                </td>
+                <td th:replace="~{fragments/layout :: amountCell(${row})}"></td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(rows)}">
+                <td th:colspan="${isAdmin} ? 5 : 4" class="text-center py-5 text-muted">
+                    <div class="mb-2" style="font-size: 2rem;">📂</div>
+                    Транзакції за вашими рахунками ще не здійснювались.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 text-center">
+        <p class="small text-muted fst-italic" th:if="${isAdmin}">Показано останні 500 транзакцій системи.</p>
+        <p class="small text-muted fst-italic" th:unless="${isAdmin}">Показано всі операції за вашими рахунками, зокрема закритими.</p>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: footer('Прототип банківської системи')}"></th:block>
+</body>
+</html>

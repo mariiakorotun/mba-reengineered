@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Помилка')}"></head>
+<body>
+<main class="container py-5" style="max-width: 640px;">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-5 text-center">
+            <div style="font-size: 3rem;">⚠️</div>
+            <h2 class="h4 fw-bold mt-3" th:text="${status} + ' — ' + ${error}">Помилка</h2>
+            <p class="text-muted" th:text="${message != null and message != '' and message != 'No message available'} ? ${message} : 'Сталася помилка. Спробуйте пізніше.'">Сталася помилка.</p>
+            <a th:href="@{/dashboard}" class="btn btn-primary mt-2">На головну</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

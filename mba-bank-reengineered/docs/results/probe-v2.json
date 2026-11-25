@@ -1,0 +1,73 @@
+{
+  "T1_idor_withdraw_foreign": {
+    "admin_balance_after": 500.0,
+    "vulnerable": false
+  },
+  "T2_idor_deposit_foreign": {
+    "admin_balance_after": 500.0,
+    "vulnerable": false
+  },
+  "T3_account_details_status": 200,
+  "T4_invalid_currency_accepted": false,
+  "T5_open_redirect": {
+    "location": "http://localhost:8082/admin",
+    "vulnerable": false
+  },
+  "T6_amount_scale": {
+    "before": 0.0,
+    "after": 0.0,
+    "accepted_invalid_scale": false
+  },
+  "T7_race_condition": {
+    "start_balance": 1000.0,
+    "end_balance": 0.0,
+    "withdraw_tx_recorded": 10,
+    "expected_end_balance": 0.0,
+    "invariant_broken": false
+  },
+  "T8_close_foreign_account": {
+    "status": 302,
+    "foreign_account_deleted": false
+  },
+  "T9_close_nonzero_balance": {
+    "deleted_with_money": false,
+    "history_lost": false
+  },
+  "performance": {
+    "/dashboard (user)": {
+      "median_ms": 7.31,
+      "p95_ms": 12.73
+    },
+    "/accounts (user)": {
+      "median_ms": 7.44,
+      "p95_ms": 15.48
+    },
+    "/transactions (user)": {
+      "median_ms": 17.06,
+      "p95_ms": 45.62
+    },
+    "/transactions (admin)": {
+      "median_ms": 12.64,
+      "p95_ms": 25.55
+    },
+    "/dashboard (admin)": {
+      "median_ms": 4.36,
+      "p95_ms": 8.97
+    },
+    "POST deposit": {
+      "median_ms": 4.9,
+      "p95_ms": 9.2
+    }
+  },
+  "summary": {
+    "T1 IDOR: зняття з чужого рахунку": "OK",
+    "T2 IDOR: поповнення чужого рахунку": "OK",
+    "T3 Сторінка рахунку не відкривається": "OK",
+    "T4 Приймається довільна валюта": "OK",
+    "T5 Відкритий редирект": "OK",
+    "T6 Сума з 3 знаками після коми": "OK",
+    "T7 Гонка при паралельному знятті": "OK",
+    "T8 Закриття чужого рахунку": "OK",
+    "T9 Закриття рахунку з коштами": "OK"
+  }
+}

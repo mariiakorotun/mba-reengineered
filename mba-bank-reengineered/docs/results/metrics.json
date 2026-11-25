@@ -1,0 +1,126 @@
+{
+  "mini-banking-app": {
+    "java_files": 20,
+    "java_loc": 675,
+    "max_file_loc": [
+      "controller/AccountController.java",
+      111
+    ],
+    "methods": 39,
+    "cc_avg": 1.56,
+    "cc_max": 4,
+    "methods_cc_gt_5": 0,
+    "template_files": 6,
+    "template_loc": 732,
+    "navbar_copies": 5,
+    "controller_data_layer_deps": [
+      "AdminController.java -> UserEntity",
+      "AdminController.java -> UserRepository",
+      "DashboardController.java -> UserEntity",
+      "DashboardController.java -> UserRepository"
+    ],
+    "packages": {
+      "(root)": {
+        "Ce": 0,
+        "Ca": 0,
+        "I": 0.0
+      },
+      "config": {
+        "Ce": 2,
+        "Ca": 0,
+        "I": 1.0
+      },
+      "controller": {
+        "Ce": 3,
+        "Ca": 0,
+        "I": 1.0
+      },
+      "model": {
+        "Ce": 0,
+        "Ca": 4,
+        "I": 0.0
+      },
+      "repository": {
+        "Ce": 1,
+        "Ca": 4,
+        "I": 0.2
+      },
+      "security": {
+        "Ce": 1,
+        "Ca": 0,
+        "I": 1.0
+      },
+      "service": {
+        "Ce": 2,
+        "Ca": 1,
+        "I": 0.67
+      }
+    },
+    "secrets": [
+      "application-prod.yml:14",
+      "DataInitializer.java:21",
+      "DataInitializer.java:23"
+    ],
+    "test_files": 0,
+    "active_tests": 0
+  },
+  "mba-bank-reengineered": {
+    "java_files": 56,
+    "java_loc": 1455,
+    "max_file_loc": [
+      "account/application/AccountService.java",
+      173
+    ],
+    "methods": 124,
+    "cc_avg": 1.56,
+    "cc_max": 6,
+    "methods_cc_gt_5": 5,
+    "template_files": 9,
+    "template_loc": 700,
+    "navbar_copies": 1,
+    "controller_data_layer_deps": [],
+    "packages": {
+      "(root)": {
+        "Ce": 0,
+        "Ca": 0,
+        "I": 0.0
+      },
+      "account": {
+        "Ce": 2,
+        "Ca": 3,
+        "I": 0.4
+      },
+      "ledger": {
+        "Ce": 2,
+        "Ca": 1,
+        "I": 0.67
+      },
+      "notification": {
+        "Ce": 1,
+        "Ca": 0,
+        "I": 1.0
+      },
+      "shared": {
+        "Ce": 0,
+        "Ca": 4,
+        "I": 0.0
+      },
+      "user": {
+        "Ce": 1,
+        "Ca": 2,
+        "I": 0.33
+      },
+      "web": {
+        "Ce": 4,
+        "Ca": 0,
+        "I": 1.0
+      }
+    },
+    "secrets": [
+      "UserSeeder.java:49 (лише профіль local)",
+      "UserSeeder.java:50 (лише профіль local)"
+    ],
+    "test_files": 5,
+    "active_tests": 38
+  }
+}
